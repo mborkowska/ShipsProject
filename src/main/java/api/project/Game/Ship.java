@@ -5,7 +5,7 @@ public class Ship {
 	private Coordinates[] coordinates;
 	private int[] hits;
 	public enum Orientation {
-		VERTICAL, HORIZONTAL
+		VERTICAL, HORIZONTAL;
 	}
 	
 	public Ship(int length, Coordinates start, Orientation orientation) {

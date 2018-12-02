@@ -10,16 +10,17 @@ import api.project.ServerClient.ServerConnection;
 
 public class Player {
 	public ServerConnection connection;
-	private ServerConnection otherPlayer;
+	private ServerConnection opponent;
 	private String username;
 	public ShipsBoard shipsBoard; 
 	public ShotsBoard shotsBoard;
 	private ArrayList<Ship> ships = new ArrayList<>();
 	private int credits = 30;
 	
-	public Player(ServerConnection sc) {
-		connection = sc;
-		username = sc.username;
+	public Player(ServerConnection connection, ServerConnection opponent) {
+		this.connection = connection;
+		this.opponent = opponent;
+		username = connection.username;
 		shipsBoard = new ShipsBoard();
 		shotsBoard = new ShotsBoard();
 	}
@@ -46,13 +47,15 @@ public class Player {
 		return true;
 	}
 	
-	public void shoot(Coordinates coordinates) {
+	public boolean shoot(Coordinates coordinates) {
 		if(shotsBoard.getAt(coordinates.getX(), coordinates.getY()) == ShotState.BLANK) {
 			GamePacket gp = new GamePacket();
 			gp.type = Type.SHOT;
 			gp.coords = coordinates;
-			connection.sendPacketToOtherPlayer(gp, otherPlayer);
+			connection.sendPacketToOtherPlayer(gp, opponent);
+			return true;
 		}
 		else System.out.println("You have already tried that");
+		return false;
 	}
 }

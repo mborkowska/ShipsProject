@@ -21,24 +21,23 @@ public class ShipsBoard {
 	public void setAt(int x, int y, ShipState state) {
 		fields[x][y] = state;
 	}
-	public void display() {
-		String row = "";
+	public String display() {
+		String result = "";
 		for(int i = 0; i < 10; i++) {
 			for(int j = 0; j < 10; j++) {
 				if(fields[i][j] == ShipState.SHIP) {
-					row += " | S";
+					result += " | S";
 				}
 				if(fields[i][j] == ShipState.HIT) {
-					row += " | X";
+					result += " | X";
 				}
 				if(fields[i][j] == ShipState.BLANK) {
-					row += " |  ";
+					result += " |  ";
 				}
 				
 			}
-			row += " |";
-			System.out.println(row);
-			row = "";
+			result += " |\n";
 		}
+		return result;
 	}
 }

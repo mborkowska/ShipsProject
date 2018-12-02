@@ -22,24 +22,23 @@ public class ShotsBoard {
 	public void setAt(int x, int y, ShotState state) {
 		fields[x][y] = state;
 	}
-	public void display() {
-		String row = "";
+	public String display() {
+		String result = "";
 		for(int i = 0; i < 10; i++) {
 			for(int j = 0; j < 10; j++) {
 				if(fields[i][j] == ShotState.HIT) {
-					row += " | X";
+					result += " | X";
 				}
 				if(fields[i][j] == ShotState.MISS) {
-					row += " | -";
+					result += " | -";
 				}
 				if(fields[i][j] == ShotState.BLANK) {
-					row += " |  ";
+					result += " |  ";
 				}
 				
 			}
-			row += " |";
-			System.out.println(row);
-			row = "";
+			result += " |\n";
 		}
+		return result;
 	}
 }

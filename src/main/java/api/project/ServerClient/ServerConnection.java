@@ -5,7 +5,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
+
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
+
+import api.project.Game.Coordinates;
+import api.project.ServerClient.GamePacket.Type;
 
 public class ServerConnection extends Thread {
 
@@ -16,6 +21,7 @@ public class ServerConnection extends Thread {
 	ObjectOutputStream oout;
 	boolean shouldRun = true;
 	public String username;
+	public Coordinates coords;
 	int room;
 
 	public ServerConnection(Socket socket, Server server) {
@@ -119,6 +125,15 @@ public class ServerConnection extends Thread {
 								textArea.append(returnPacket.message);
 								sendPacketToClient(returnPacket);
 							}
+						}
+					}
+					if(p instanceof GamePacket) {
+						GamePacket gp = (GamePacket) p;
+						if(gp.type == Type.SHOT) {
+							server.rooms.get(room).shot(this, gp.coords);;
+						}
+						if(gp.type == Type.SET_SHIP) {
+							server.rooms.get(room).setShip(this, gp);
 						}
 					}
 					

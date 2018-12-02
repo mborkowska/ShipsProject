@@ -18,6 +18,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import api.project.Game.Coordinates;
+import api.project.Game.Ship;
+import api.project.ServerClient.GamePacket.Type;
 
 public class Client implements ActionListener {
 	JFrame frame;
@@ -25,9 +27,11 @@ public class Client implements ActionListener {
 	JTextField textField = new JTextField(25);
 	JButton joinButton = new JButton("Join");
 	JButton playButton = new JButton("Play");
+	JButton setShipButton = new JButton("Set Ship");
 	JButton shotButton = new JButton("Shoot");
 	JFrame gameFrame;
 	JTextArea gameTextArea = new JTextArea();
+	JTextField gameTextField = new JTextField(25);
 	int room = 0;
 
 	Socket s;
@@ -90,12 +94,15 @@ public class Client implements ActionListener {
 		Panel gameP = new Panel();
 		playButton.addActionListener(this);
 		shotButton.addActionListener(this);
+		setShipButton.addActionListener(this);
 		gameTextArea.setEditable(false);
 		JScrollPane gameAreaScrollPane = new JScrollPane(gameTextArea);
 		gameAreaScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		gameAreaScrollPane.setPreferredSize(new Dimension(430, 275));
 		gameP.add(gameAreaScrollPane);
+		gameP.add(gameTextField);
 		gameP.add(playButton);
+		gameP.add(setShipButton);
 		gameP.add(shotButton);
 		gameFrame.add(gameP);
 
@@ -148,17 +155,37 @@ public class Client implements ActionListener {
 			}
 		}
 		if (e.getSource() == shotButton) {
-			gameTextArea.append("You are shooting at 1,1");
+			String input = gameTextField.getText();
+			String[] subString = input.split(",");
+			gameTextArea.append("You shoots at: " + input + "\n");
 			GamePacket gp = new GamePacket();
 			gp.type = GamePacket.Type.SHOT;
-			gp.coords = new Coordinates(1, 1);
+			gp.coords = new Coordinates(Integer.parseInt(subString[0]), (Integer.parseInt(subString[1])));
 			try {
-				oout.writeObject(p);
+				oout.writeObject(gp);
 				oout.flush();
 				System.out.println();
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
+			gameTextField.setText(null);
+		}
+		if(e.getSource() == setShipButton) {
+			String input = gameTextField.getText();
+			String[] subString = input.split(",");
+			GamePacket gp = new GamePacket();
+			gp.type = Type.SET_SHIP;
+			gp.length = Integer.parseInt(subString[0]);
+			gp.coords = new Coordinates(Integer.parseInt(subString[1]), (Integer.parseInt(subString[2])));
+			gp.orientation = Integer.parseInt(subString[3]);
+			try {
+				oout.writeObject(gp);
+				oout.flush();
+				System.out.println();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			gameTextField.setText(null);
 		}
 	}
 
@@ -205,6 +232,9 @@ public class Client implements ActionListener {
 						if(gp.type == GamePacket.Type.SHOT) {
 							gameTextArea.append("You opponent shots at: " + gp.coords.getX() + ", " + gp.coords.getY() + "\n");
 						}	
+						if(gp.type == Type.ANSWER) {
+							gameTextArea.append("Result of your shot: " + gp.answer + "\n");
+						}
 					}
 
 				} catch (ClassNotFoundException | IOException e) {
